@@ -71,7 +71,7 @@ DATABASES = {
         'NAME': 'collectionproduct',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': '12345678',
+        'PASSWORD': '123abcABC!',
         'PORT': '3306',
     }
 }

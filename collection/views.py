@@ -1,7 +1,7 @@
 from django.http import Http404
 
 from .models import Product
-from rest_framework import status
+from rest_framework import status, generics
 from .serializers import ProductSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,10 +30,10 @@ class ProductList(APIView):
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        ser = ProductSerializer(data=request.data, instance=serializer.validated_data['product'])
-        ser.is_valid(raise_exception=True)
-        ser.save()
-        return Response(ser.data)
+        # ser = ProductSerializer(data=request.data, instance=serializer.validated_data['product'])
+        # ser.is_valid(raise_exception=True)
+        # ser.save()
+        return Response(serializer.data)
 
 
 class ProductDetail(APIView):
@@ -60,7 +60,7 @@ class ProductDetail(APIView):
     def delete(self, request, pk):
         product = self.get_object(pk)
         product.delete()
-
+#
 
 # class ProductList(generics.ListCreateAPIView):
 #     queryset = Product.objects.all()

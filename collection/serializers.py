@@ -3,10 +3,11 @@ from rest_framework import serializers
 
 
 class CollectionSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
 
     class Meta:
         model = Collection
-        fields = ['title']
+        fields = ['id']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -18,26 +19,26 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'price', 'description', 'available', 'collection']
 
     def create(self, validated_data):
-        collection = validated_data.pop('collection', [])
+        collection = validated_data.pop('collection')
         product = Product.objects.create(**validated_data)
-        product.collection.add(*collection)
-        product.save()
+        for i in collection:
+            Collection.objects.filter(id=i['id'])
+            product.collection.add(i['id'])
+            product.save()
         return product
 
     def update(self, instance, validated_data):
-        collection_data = validated_data.pop('collection')
-        collectionss = instance.collection.all()
-        collectionss = list(collectionss)
+
         instance.name = validated_data.get('name', instance.name)
         instance.price = validated_data.get('price', instance.price)
         instance.description = validated_data.get('description', instance.description)
         instance.available = validated_data.get('available', instance.available)
-        instance.save()
 
-        for data in collection_data:
-            collect = collectionss.pop(0)
-            collect.title = data.get('title', collect.title)
-            collect.save()
+        collection_data = validated_data.pop('collection')
+        for j in collection_data:
+            Collection.objects.filter(id=j['id'])
+            instance.collection.add(j['id'])
+            instance.save()
         return instance
 
 
@@ -55,16 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     products.collection.add(*collection)
     #     return products
 
-
-
     # this is all for creating product data it is not accepting collection data
-
-    # def create(self, validated_data):
-    #     collection_data = validated_data.pop('collection')
-    #     collection = Collection.objects.create(**collection_data)
-    #     product = Product.objects.create(collection=collection, **validated_data)
-    #     return product
-
 
 
 
@@ -74,14 +66,6 @@ class ProductSerializer(serializers.ModelSerializer):
     #     for i in collection_data:
     #         Collection.objects.create(**i, products=products)
     #     return products
-
-
-
-
-
-
-
-
 
     # def update(self, instance, validated_data):
     #
@@ -94,8 +78,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     instance.save()
     #     return instance
 
-
-        # collections_with_same_product_instance = Collection.objects.filter(products=instance.pk).values_list('id', flat=True)
+    # collections_with_same_product_instance = Collection.objects.filter(products=instance.pk).values_list('id', flat=True)
         # collections_id_pool = []
         # for collection in collection_list:
         #     if "id" in collection.keys():

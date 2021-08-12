@@ -1,7 +1,15 @@
 from django.db import models
 
 
+class Collection(models.Model):
+    title = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.title
+
+
 class Product(models.Model):
+    collection = models.ManyToManyField(Collection)
     name = models.CharField(max_length=50)
     price = models.PositiveIntegerField()
     description = models.TextField(blank=True)
@@ -9,14 +17,6 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
 
 
-class Collection(models.Model):
-    products = models.ManyToManyField(Product, related_name="collection")
-    title = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.title
 
